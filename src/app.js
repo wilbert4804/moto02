@@ -1,5 +1,6 @@
 const cors = require('cors');
 const express = require('express');
+const morgan = require('morgan');
 
 //rutas
 const usuarioRoutes = require('./routes/usuarioRoutes');
@@ -13,15 +14,33 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(morgan('dev'));
 
-app.use((req, res, next) => {
+app.use('/api/v1/users', usuarioRoutes);
+app.use('/api/v1/repairs', repairRoutes);
+
+app.all('*', (req, res, next) => {
+  return next(
+    new AppError(`cant find ${req.originalUrl} on this server!`, 404)
+  );
+});
+
+app.use((err, req, res, next) => {
+  console.log(err);
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || 'fail';
+
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message,
+  });
+});
+
+/*app.use((req, res, next) => {
   const time = new Date().toISOString();
 
   req.requestTime = time;
   next();
-});
-
-app.use('/api/v1/users', usuarioRoutes);
-app.use('/api/v1/repairs', repairRoutes);
+});*/
 
 module.exports = app;

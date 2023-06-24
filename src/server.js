@@ -10,11 +10,11 @@ db.authenticate()
 
 db.sync()
 
-  .then(() => console.log('Database synced'))
+  .then(() => console.log('Database synced 👍'))
 
   .catch((err) => console.log(err));
 
-console.log(process);
+//console.log(process);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
